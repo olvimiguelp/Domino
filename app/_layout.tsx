@@ -48,7 +48,6 @@ export default function RootLayout() {
             }}>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="+not-found" options={{ title: 'Oops!' }} />
-              <Stack.Screen name="*" options={{ title: 'Redirecting...' }} redirectTo="/" />
             </Stack>
             <StatusBar style="light" />
           </View>
