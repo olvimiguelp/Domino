@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "DominoScore",
+    "scheme": "dominoscore",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -40,7 +40,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/8efe30fe-3b5b-42a8-ac30-ab99f5560061"
+      "enabled": false
     },
     "android": {
       "package": "com.domino.app"
