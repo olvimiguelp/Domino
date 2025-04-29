@@ -31,6 +31,13 @@
         "projectId": "8efe30fe-3b5b-42a8-ac30-ab99f5560061"
       }
     },
-    "owner": "olvimiguelp"
+    "owner": "olvimiguelp",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8efe30fe-3b5b-42a8-ac30-ab99f5560061"
+    },
+    "android": {}
   }
 }
