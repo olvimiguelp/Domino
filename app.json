@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "DominoScore",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -28,7 +28,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "8efe30fe-3b5b-42a8-ac30-ab99f5560061"
+        "projectId": "78700d5e-5dd8-4bfd-b1ff-d6b240f9d8ab"
       }
     },
     "owner": "olvimiguelp",
