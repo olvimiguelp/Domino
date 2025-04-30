@@ -94,21 +94,20 @@ export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const resetScores = async () => {
     const newScoreData: ScoreData = {
       currentScores: {},
-      highScores: {},
+      highScores: {}, // Reiniciar también las puntuaciones altas
       lastResetTimestamp: Date.now(),
       expirationDate: Date.now() + (EXPIRATION_DAYS * 24 * 60 * 60 * 1000),
     };
 
-    // Update state immediately
     setScoreData(newScoreData);
 
-    // Save to storage if on mobile
     if (Platform.OS !== 'web') {
       try {
         await AsyncStorage.removeItem(SCORE_STORAGE_KEY);
         await saveScores(newScoreData);
       } catch (error) {
         console.error('Error resetting scores:', error);
+        throw new Error('Failed to reset scores');
       }
     }
   };

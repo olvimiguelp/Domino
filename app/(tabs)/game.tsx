@@ -24,20 +24,20 @@ export default function GameScreen() {
   const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
-    // If there's no active game, redirect to new game screen
+    // Redirigir si no hay un juego activo
     if (!activeGame) {
       router.replace('/');
       return;
     }
 
-    // Initialize round scores with empty strings
+    // Inicializar puntuaciones de la ronda con cadenas vacías
     const initialScores: Record<string, string> = {};
     activeGame.players.forEach(player => {
       initialScores[player.id] = '';
     });
     setRoundScores(initialScores);
 
-    // Check if game has been won
+    // Verificar si el juego ha sido ganado
     if (hasReachedTargetScore()) {
       setShowWinnerModal(true);
     }
@@ -121,33 +121,18 @@ export default function GameScreen() {
   };
 
   const handleResetScores = async () => {
-    Alert.alert(
-      t('resetScores'),
-      t('resetScoresConfirm'),
-      [
-        {
-          text: t('cancel'),
-          style: 'cancel'
-        },
-        {
-          text: t('reset'),
-          style: 'destructive',
-          onPress: async () => {
-            setIsResetting(true);
-            try {
-              await resetScores();
-              await resetAllGames();
-              router.replace('/');
-            } catch (error) {
-              console.error('Error resetting scores:', error);
-              Alert.alert(t('error'), t('resetError'));
-            } finally {
-              setIsResetting(false);
-            }
-          }
-        }
-      ]
-    );
+    setIsResetting(true);
+    try {
+      const resetCurrentScores = Object.keys(currentScores).reduce((acc, playerId) => {
+        acc[playerId] = 0;
+        return acc;
+      }, {} as Record<string, number>);
+      await resetScores(); // Restablece solo los puntos actuales
+    } catch (error) {
+      console.error('Error resetting scores:', error);
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   const toggleLanguage = () => {
@@ -176,14 +161,6 @@ export default function GameScreen() {
             icon={<Languages size={18} color={Colors.primary.main} />}
             variant="outline"
             style={styles.headerButton}
-          />
-          <Button
-            title={t('resetScores')}
-            onPress={handleResetScores}
-            icon={<RefreshCw size={18} color={Colors.error.main} />}
-            variant="danger"
-            style={styles.headerButton}
-            disabled={isResetting}
           />
         </View>
 

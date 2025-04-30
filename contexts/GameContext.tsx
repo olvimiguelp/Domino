@@ -158,6 +158,7 @@ export const GameContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setActiveGame(null);
     } catch (error) {
       console.error('Failed to reset games:', error);
+      throw new Error('Failed to reset games');
     }
   };
 

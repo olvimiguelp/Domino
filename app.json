@@ -2,7 +2,7 @@
   "expo": {
     "name": "DominoScore",
     "slug": "DominoScore",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "dominoscore",
@@ -40,7 +40,8 @@
       "policy": "appVersion"
     },
     "updates": {
-      "enabled": false
+      "enabled": false,
+      "url": "https://u.expo.dev/78700d5e-5dd8-4bfd-b1ff-d6b240f9d8ab"
     },
     "android": {
       "package": "com.domino.app"
