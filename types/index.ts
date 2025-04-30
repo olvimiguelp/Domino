@@ -33,4 +33,5 @@ export interface GameContextType {
   getCurrentScores: () => Record<string, number>;
   getWinner: () => string | null;
   hasReachedTargetScore: () => boolean;
+  isLoading: boolean;
 }

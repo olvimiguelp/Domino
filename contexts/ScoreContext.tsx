@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 interface ScoreData {
   currentScores: Record<string, number>;
@@ -13,6 +14,7 @@ interface ScoreContextType {
   highScores: Record<string, number>;
   updateScore: (playerId: string, score: number) => Promise<void>;
   resetScores: () => Promise<void>;
+  isLoading: boolean;
 }
 
 const SCORE_STORAGE_KEY = 'domino-tracker-scores';
@@ -27,14 +29,15 @@ export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     lastResetTimestamp: Date.now(),
     expirationDate: Date.now() + (EXPIRATION_DAYS * 24 * 60 * 60 * 1000),
   });
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load scores from storage on mount
   useEffect(() => {
     loadScores();
   }, []);
 
   const loadScores = async () => {
     try {
+      setIsLoading(true);
       const storedData = await AsyncStorage.getItem(SCORE_STORAGE_KEY);
       
       if (storedData) {
@@ -49,19 +52,20 @@ export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     } catch (error) {
       console.error('Error loading scores:', error);
-      // Handle storage errors by resetting to defaults
       await resetScores();
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const saveScores = async (data: ScoreData) => {
     try {
-      await AsyncStorage.setItem(SCORE_STORAGE_KEY, JSON.stringify(data));
+      if (Platform.OS !== 'web') {
+        await AsyncStorage.setItem(SCORE_STORAGE_KEY, JSON.stringify(data));
+      }
     } catch (error) {
       console.error('Error saving scores:', error);
-      // Handle storage full or other errors
       if (error instanceof Error && error.name === 'QuotaExceededError') {
-        // Clear old data if storage is full
         await AsyncStorage.clear();
         await AsyncStorage.setItem(SCORE_STORAGE_KEY, JSON.stringify(data));
       }
@@ -82,7 +86,9 @@ export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     setScoreData(newScoreData);
-    await saveScores(newScoreData);
+    if (Platform.OS !== 'web') {
+      await saveScores(newScoreData);
+    }
   };
 
   const resetScores = async () => {
@@ -93,8 +99,18 @@ export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       expirationDate: Date.now() + (EXPIRATION_DAYS * 24 * 60 * 60 * 1000),
     };
 
+    // Update state immediately
     setScoreData(newScoreData);
-    await saveScores(newScoreData);
+
+    // Save to storage if on mobile
+    if (Platform.OS !== 'web') {
+      try {
+        await AsyncStorage.removeItem(SCORE_STORAGE_KEY);
+        await saveScores(newScoreData);
+      } catch (error) {
+        console.error('Error resetting scores:', error);
+      }
+    }
   };
 
   return (
@@ -103,6 +119,7 @@ export const ScoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       highScores: scoreData.highScores,
       updateScore,
       resetScores,
+      isLoading,
     }}>
       {children}
     </ScoreContext.Provider>

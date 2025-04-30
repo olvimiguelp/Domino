@@ -27,7 +27,11 @@ export type StringKeys =
   | 'resetScores'
   | 'resetScoresConfirm'
   | 'reset'
-  | 'cancel';
+  | 'cancel'
+  | 'noScores'
+  | 'enterScore'
+  | 'error'
+  | 'resetError';
 
 export const Strings: Record<Language, Record<StringKeys, string>> = {
   en: {
@@ -57,7 +61,11 @@ export const Strings: Record<Language, Record<StringKeys, string>> = {
     resetScores: 'Reset Scores',
     resetScoresConfirm: 'Are you sure you want to reset all scores? This action cannot be undone.',
     reset: 'Reset',
-    cancel: 'Cancel'
+    cancel: 'Cancel',
+    noScores: 'No scores entered',
+    enterScore: 'Please enter a score for at least one player.',
+    error: 'Error',
+    resetError: 'An error occurred while resetting scores.',
   },
   es: {
     appName: 'Contador de Puntos Dominó',
@@ -86,6 +94,10 @@ export const Strings: Record<Language, Record<StringKeys, string>> = {
     resetScores: 'Reiniciar Puntos',
     resetScoresConfirm: '¿Estás seguro de que quieres reiniciar todos los puntos? Esta acción no se puede deshacer.',
     reset: 'Reiniciar',
-    cancel: 'Cancelar'
+    cancel: 'Cancelar',
+    noScores: 'No se ingresaron puntuaciones',
+    enterScore: 'Por favor, ingresa una puntuación para al menos un jugador.',
+    error: 'Error',
+    resetError: 'Ocurrió un error al reiniciar las puntuaciones.',
   },
 };

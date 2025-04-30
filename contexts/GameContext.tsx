@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
 import { Game, Player, Round, GameContextType } from '@/types';
 import { Colors } from '@/constants/Colors';
+import { Platform } from 'react-native';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -11,11 +12,13 @@ const GAMES_STORAGE_KEY = 'domino-tracker-games';
 export const GameContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [games, setGames] = useState<Game[]>([]);
   const [activeGame, setActiveGame] = useState<Game | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load games from AsyncStorage on mount
   useEffect(() => {
     const loadGames = async () => {
       try {
+        setIsLoading(true);
         const storedGames = await AsyncStorage.getItem(GAMES_STORAGE_KEY);
         if (storedGames) {
           const parsedGames: Game[] = JSON.parse(storedGames);
@@ -29,6 +32,8 @@ export const GameContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
       } catch (error) {
         console.error('Failed to load games:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -39,7 +44,10 @@ export const GameContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   useEffect(() => {
     const saveGames = async () => {
       try {
-        await AsyncStorage.setItem(GAMES_STORAGE_KEY, JSON.stringify(games));
+        if (Platform.OS !== 'web') {
+          // Only save to AsyncStorage on mobile platforms
+          await AsyncStorage.setItem(GAMES_STORAGE_KEY, JSON.stringify(games));
+        }
       } catch (error) {
         console.error('Failed to save games:', error);
       }
@@ -210,6 +218,7 @@ export const GameContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       getCurrentScores,
       getWinner,
       hasReachedTargetScore,
+      isLoading,
     }}>
       {children}
     </GameContext.Provider>

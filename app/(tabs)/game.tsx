@@ -5,6 +5,7 @@ import { Colors } from '@/constants/Colors';
 import { Layout } from '@/constants/Layout';
 import { useLocalization } from '@/contexts/LocalizationContext';
 import { useGame } from '@/contexts/GameContext';
+import { useScores } from '@/contexts/ScoreContext';
 import ScoreDisplay from '@/components/ScoreDisplay';
 import Button from '@/components/Button';
 import NumberPad from '@/components/NumberPad';
@@ -14,15 +15,17 @@ import { Trophy, RotateCcw, ArrowRight, Languages, RefreshCw } from 'lucide-reac
 export default function GameScreen() {
   const { t, language, setLanguage } = useLocalization();
   const router = useRouter();
-  const { activeGame, getCurrentScores, addRound, undoLastRound, hasReachedTargetScore, getWinner, resetGame, createGame } = useGame();
+  const { activeGame, getCurrentScores, addRound, undoLastRound, hasReachedTargetScore, getWinner, resetGame, resetAllGames } = useGame();
+  const { resetScores } = useScores();
   
   const [roundScores, setRoundScores] = useState<Record<string, string>>({});
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [activePlayer, setActivePlayer] = useState<string | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
-    // Ensure we have an active game before attempting navigation
-    if (activeGame === null || activeGame === undefined) {
+    // If there's no active game, redirect to new game screen
+    if (!activeGame) {
       router.replace('/');
       return;
     }
@@ -87,7 +90,7 @@ export default function GameScreen() {
     }
 
     if (!hasScores) {
-      Alert.alert('No Scores', 'Please enter at least one score greater than zero.');
+      Alert.alert(t('noScores'), t('enterScore'));
       return;
     }
 
@@ -117,10 +120,34 @@ export default function GameScreen() {
     router.replace('/');
   };
 
-  const handleResetScores = () => {
-    if (!activeGame) return;
-    // Create a new game with same players and target score but no rounds
-    createGame(activeGame.targetScore, activeGame.players);
+  const handleResetScores = async () => {
+    Alert.alert(
+      t('resetScores'),
+      t('resetScoresConfirm'),
+      [
+        {
+          text: t('cancel'),
+          style: 'cancel'
+        },
+        {
+          text: t('reset'),
+          style: 'destructive',
+          onPress: async () => {
+            setIsResetting(true);
+            try {
+              await resetScores();
+              await resetAllGames();
+              router.replace('/');
+            } catch (error) {
+              console.error('Error resetting scores:', error);
+              Alert.alert(t('error'), t('resetError'));
+            } finally {
+              setIsResetting(false);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const toggleLanguage = () => {
@@ -156,6 +183,7 @@ export default function GameScreen() {
             icon={<RefreshCw size={18} color={Colors.error.main} />}
             variant="danger"
             style={styles.headerButton}
+            disabled={isResetting}
           />
         </View>
 
